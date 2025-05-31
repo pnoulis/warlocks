@@ -1,6 +1,7 @@
 # About
 
-Warlocks is a multiplayer point and click and game for the web.
+Warlocks is a point-and-click multiplayer game for the web inspired by
+Dota1 mod map `warlock brawl`.
 
 ## Usage
 
@@ -15,4 +16,3 @@ Submit a pull request
 ## Contact
 
 pavlos.noulis@gmail.com
-

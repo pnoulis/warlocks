@@ -1,0 +1,33 @@
+{
+  "name": "warlocks",
+  "version": "0.0.1",
+  "description": "Warlocks is a multiplayer point and click and game for the web.",
+  "license": "MIT",
+  "author": "pavlos noulis <pavlos.noulis@gmail.com> (https://github.com/pnoulis)",
+  "private": true,
+  "engines": {
+    "node": "v22.16.0",
+    "npm": "v10.9.2"
+  },
+  "type": "module",
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "keywords": [
+    "multiplayer",
+    "game"
+  ],
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.0",
+    "nodemon": "^3.1.10",
+    "pino-pretty": "^13.0.0",
+    "prettier": "^3.5.3"
+  },
+  "lint-staged": {
+    "*.{js,css,md}": "prettier --write"
+  }
+}

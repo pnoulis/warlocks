@@ -39,6 +39,9 @@ main() {
     simba_define_btime_envar MODE 'production'
     simba_cli_parse_options "$@"
 
+    # Start your configuration here
+    warlocks_resolve_app_dependencies
+
     # Define installation directories
     if test -z "$SIMBA_INSTALLDIRS"; then
         simba_define_installdirs_gnu
@@ -68,6 +71,39 @@ main() {
     simba_create_makefile
 }
 
+warlocks_resolve_app_dependencies() {
+    # Resolve Node
+    simba_define_ctime_envar NODE_VERSION '22.16.0'
+    simba_define_ctime_envar NPM_VERSION '10.9.2'
+    # If NODE_VERSION is not found do not halt execution; rather try
+    # and install it
+    set +o errexit
+    simba_is_command_installed node $NODE_VERSION
+    if test $? -gt 0; then
+        # NODE_VERSION not found; Try and install it.
+        [ -s "$NVM_DIR/nvm.sh" ] || simba_fatal "Could not load node version manager (nvm). Is nvm installed?"
+        source "$NVM_DIR/nvm.sh"  # load nvm
+        nvm install $NODE_VERSION --latest-npm
+    fi
+    set -o errexit
+    # Finally if NODE_VERSION failed to get installed exit
+    simba_is_command_installed node $NODE_VERSION
+    simba_define_btime_envar NODE $command_path
+    if test MODE == 'production'; then
+        simba_define_btime_envar NODE_ENV 'production'
+    else
+        simba_define_btime_envar NODE_ENV 'development'
+    fi
+
+    # Resolve Node package manager (npm)
+    simba_is_command_installed npm $NPM_VERSION
+    simba_define_btime_envar NPM $command_path
+    simba_define_btime_envar NODE_BIN ${SRCROOTDIR_ABS}/node_modules/.bin
+
+    # Node options
+    simba_define_btime_envar NODE_OPTIONS "$NODE_OPTIONS --experimental-vm-modules"
+
+}
 
 simba_create_macrosfile() {
     simba_print "Creating macrosfile...|$SIMBA_CONFIG_MACROSFILE"
@@ -191,7 +227,6 @@ simba_cli_parse_options() {
     unset _param
 }
 
-source '.simba/sqlite3-helper'
 source '.simba/os.sh'
 source '.simba/installdirs-gnu.sh'
 source '.simba/debug.sh'
@@ -205,5 +240,5 @@ source '.simba/buildir.sh'
 source '.simba/url.sh'
 source '.simba/installdirs-xdg.sh'
 source '.simba/envars.sh'
- 
+
 main "$@"

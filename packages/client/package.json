@@ -1,0 +1,17 @@
+{
+  "name": "warlocks-client",
+  "version": "0.0.1",
+  "description": "Warlocks player client",
+  "license": "MIT",
+  "author": "pavlos noulis <pavlos.noulis@gmail.com> (https://github.com/pnoulis)",
+  "private": true,
+  "engines": {
+    "node": "v22.16.0",
+    "npm": "v10.9.2"
+  },
+  "type": "module",
+  "scripts": {},
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}

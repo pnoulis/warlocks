@@ -1,0 +1,89 @@
+* Data binary transfers
+
+use stream/multibyte
+
+* Architecture
+
+The game accepted the input performed computations changing its state
+and displayed that state in a monitor, speakers etc.
+
+The inputs are located in separate computers across another network.
+
+
+The client sends the input and the server tells what to display.
+
+In the most ideal scenario lets assume we have infinite resources.
+
+Lets imagine the latency is 0.
+
+When we have this kind of network we can actually treat this system of
+server + client as basically a single device.
+
+
+You can think of a players 'controller' as just a client which is
+connected over very fast network.
+
+
+The client just takes all the input it receives from the user and it
+sends all of the input to the server.
+
+
+The server updates the state
+
+And sends the entirety of the state of the game to the client
+
+and client just displays that. And of course it does that for each
+individual client.
+
+
+We write separate programs that we run on separate parts of those
+systems.
+
+In case of a web application, you have frontend and backend.
+
+essentially you connect to a server. Server sends you back a program that
+the client is supposed to run. THat program connects back to the
+server and now you have two programs communicating with each other.
+
+
+This kind of situation even happens on a single machine. On a single
+machine that also happens when you are doing graphics with CPU's.
+
+shaders are prgorams that run on the gpu. It takes a shader, (a program)
+
+
+It is basically a keyboard that runs a signal over a very slow wire
+and also i can program that keyboard. I can send some code into that
+keyboard and it do things for me.
+
+Let all of the parts of the system have a copy of the state of the
+game.
+
+They are running this copy simultaneously and they are updating them
+simultaneously.
+
+if some client receives input, it sends that input to the server.o
+
+For example.
+
+The client communicates that a key is being held. (The key that moves
+to the right).
+
+The server takes a note. so this client is holding a key to the right.
+notifies all the clients.  Everyone, that motherfucker is holding the
+key that moves to the right.
+
+Everyone is computing their own state.
+
+
+There should be a mechanism that lets servers to say:
+
+lets synchronize our state.
+
+probably some discrepancies have accumulated.
+
+
+
+
+
+* Sharing state - updating state

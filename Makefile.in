@@ -100,7 +100,6 @@ CP						= __CP__
 RM						= __RM__
 CAT						= __CAT__
 MKDIR					= __MKDIR__
-CAT						= __CAT__
 CUT						= __CUT__
 TAIL					= __TAIL__
 GREP					= __GREP__
@@ -115,11 +114,20 @@ colon								= :
 CONFIG_MACROSFILE		= __SIMBA_CONFIG_MACROSFILE__
 CONFIG_MAKEFILE_IN	= __SIMBA_CONFIG_MAKEFILE_IN__
 CONFIG_MAKEFILE			= __SIMBA_CONFIG_MAKEFILE__
-export DOTENVFILE		= $(BUILDIR).env
+export DOTENVFILE		= $(BUILDIR)/.env
 ENVIRONMENT					= __BUILD_TIME_ENV__
 export MODE					= __MODE__
+LOADENV							= set -a; source $(DOTENVFILE)
+VPATH =
 
-VPATH = $(SRCDIR)
+##################################################
+# Node
+##################################################
+NODE								= __NODE__
+NPM									= __NPM__
+NODE_BIN						= __NODE_BIN__
+export NODE_ENV			= __NODE_ENV__
+export NODE_OPTIONS = __NODE_OPTIONS__
 
 ##################################################
 # Default target
@@ -127,9 +135,54 @@ VPATH = $(SRCDIR)
 all: build
 
 ##################################################
+# dev
+##################################################
+dev: start
+
+start: start-warlocks-server start-warlocks-client
+stop: stop-warlocks-server stop-warlocks-client
+
+start-warlocks-server: build-warlocks-server
+	$(LOADENV); $(NODE_BIN)/nodemon --watch $(SRCROOTDIR)/packages/server \
+	--exec "make build-warlocks-server && $(NODE) $(BUILDIR)/server/main.js | $(NODE_BIN)/pino-pretty -c" \
+	> $(BUILDROOTDIR_ABS)/server.log 2>&1 & echo $$! > $(BUILDROOTDIR_ABS)/server.pid
+
+start-warlocks-client: build-warlocks-client
+	$(LOADENV); cd $(SRCROOTDIR)/packages/client; \
+	$(NODE_BIN)/vite > $(BUILDROOTDIR_ABS)/client.log 2>&1 & echo $$! > $(BUILDROOTDIR_ABS)/client.pid
+
+stop-warlocks-server:
+	if [[ -f server.pid ]]; then \
+		pid="$$($(CAT) server.pid)"; \
+		kill "$$pid" 2>/dev/null; \
+		if [[ $$? -eq 0 ]]; \
+			then echo "Killed warlocks-server($$pid)"; $(RM) $(BUILDROOTDIR_ABS)/server.pid; \
+			else echo "Failed to kill warlocks-server($$pid)"; \
+		fi; \
+	fi
+
+stop-warlocks-client:
+		if [[ -f client.pid ]]; then \
+		pid="$$($(CAT) client.pid)"; \
+		kill "$$pid" 2>/dev/null; \
+		if [[ $$? -eq 0 ]]; \
+			then echo "Killed warlocks-client($$pid)"; $(RM) $(BUILDROOTDIR)/client.pid; \
+			else echo "Failed to kill warlocks-client($$pid)"; \
+		fi; \
+	fi
+
+##################################################
 # Build
 ##################################################
-build:
+build: dotenv build-warlocks-server build-warlocks-client
+
+build-warlocks-server:
+	$(LOADENV); \
+	cd $(SRCROOTDIR)/packages/server && $(NODE) esbuild.build.js
+
+build-warlocks-client:
+	$(LOADENV); \
+	cd $(SRCROOTDIR)/packages/client && $(NODE) vite.build.js
 
 ##################################################
 # Release
@@ -162,30 +215,35 @@ uninstall:
 # Clean
 ##################################################
 clean:
+	-$(RM) -f *.log
+	if [[ "$(BUILDROOTDIR_ABS)" != "$(BUILDIR_ABS)" ]]; then $(RM) -fr $(BUILDIR); fi
 
 ##################################################
 # Distclean
 ##################################################
 distclean: clean
-	-$(RM) -f *.log
 	-$(RM) -f .#*
 	-$(RM) -f config.*
 	-$(RM) -f Makefile
+	-$(RM) -fr node_modules
+	-$(RM) -f package-lock.json
 
 ##################################################
 # Environment
 ##################################################
 dotenv: $(DOTENVFILE)
 
-$(DOTENVFILE): $(CONFIG_MAKEFILE_IN)
+$(DOTENVFILE): $(CONFIG_MAKEFILE_IN) | $(BUILDIR_ABS)
 	$(ECHO) -e $(ENVIRONMENT) > $@
-
 
 ##################################################
 # misc
 ##################################################
 .DEFAULT:
 	@if [ ! -f "$<" ]; then $(ECHO) "Missing file -> $${file:-$<}"; exit 1; fi
+
+format:
+	$(NODE_BIN)/prettier . --write
 
 ##################################################
 # directories

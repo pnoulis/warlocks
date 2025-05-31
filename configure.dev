@@ -2,6 +2,7 @@
 
 options=(
     --dev
+    --mode=development
     --installdirs=gnu
     --buildir=build
     --prefix='${BUILDIR_ABS}'
