@@ -20,6 +20,7 @@ export function handleServerMessage(ws, state, event) {
       break;
     case MsgType.PLAYER_DISCONNECTED:
       playerDisconnected(ws, state, msg);
+      break;
     case MsgType.PLAYER_JOINED:
       playerJoined(ws, state, msg);
       break;
