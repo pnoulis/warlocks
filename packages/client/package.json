@@ -12,5 +12,8 @@
   "scripts": {},
   "devDependencies": {
     "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "warlocks-common": "../common"
   }
 }

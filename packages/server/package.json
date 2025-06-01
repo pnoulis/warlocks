@@ -12,10 +12,10 @@
   "scripts": {},
   "devDependencies": {
     "@types/ws": "^8.18.1",
-    "esbuild": "^0.25.5",
-    "warlocks-common": "../common"
+    "esbuild": "^0.25.5"
   },
   "dependencies": {
-    "ws": "^8.18.2"
+    "ws": "^8.18.2",
+    "warlocks-common": "../common"
   }
 }
