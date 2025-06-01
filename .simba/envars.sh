@@ -1,5 +1,10 @@
 # use utils.sh
 
+
+single_quote=\x27
+double_quote=\x22
+dollar_sign=\x24
+
 simba_define_btime_envar_respectfully() {
     local name="$1"
     local value="${!name:-$2}"
@@ -18,7 +23,8 @@ simba_define_btime_envar() {
     SIMBA_CONFIG_TIME_ENV="${SIMBA_CONFIG_TIME_ENV:+$SIMBA_CONFIG_TIME_ENV
 }__${name}__=${value}"
     SIMBA_BUILD_TIME_ENV_M4_DEFINES="${SIMBA_BUILD_TIME_ENV_M4_DEFINES:+$SIMBA_BUILD_TIME_ENV_M4_DEFINES }-D__${name_uppercase}__='\$($name)'"
-    SIMBA_BUILD_TIME_ENV="${SIMBA_BUILD_TIME_ENV:+$SIMBA_BUILD_TIME_ENV\n}${name_uppercase}='\$($name)'"
+    SIMBA_BUILD_TIME_ENV="${SIMBA_BUILD_TIME_ENV:+$SIMBA_BUILD_TIME_ENV\n}${name_uppercase}="
+    SIMBA_BUILD_TIME_ENV+="\x27\$($name)\x27"
 
     declare -gx "${name}=${value}"
     simba_print "Defined build time environment variable...|${name}=${value}"

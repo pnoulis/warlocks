@@ -8,6 +8,7 @@ options=(
     --prefix='${BUILDIR_ABS}'
     --datarootdir='${SRCROOTDIR_ABS}'
     --datadir='${SRCDIR_ABS}'
+    --warlocks-server-url='ws://localhost:6970'
 )
 
 ./configure "${options[@]}"

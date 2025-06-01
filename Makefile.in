@@ -49,13 +49,6 @@ export DISTDIR_ABS			= __DISTDIR_ABS__
 ##################################################
 # Installation directories
 ##################################################
-export XDG_DATA_HOME			= __XDG_DATA_HOME__
-export XDG_CONFIG_HOME		= __XDG_CONFIG_HOME__
-export XDG_STATE_HOME			= __XDG_STATE_HOME__
-export XDG_CACHE_HOME			= __XDG_CACHE_HOME__
-export XDG_RUNTIME_DIR		= __XDG_RUNTIME_DIR__
-export XDG_DATA_DIRS			= __XDG_DATA_DIRS__
-export XDG_CONFIG_DIRS		= __XDG_CONFIG_DIRS__
 export prefix							= __prefix__
 export exec_prefix				= __exec_prefix__
 export bindir							= __bindir__
@@ -144,45 +137,41 @@ stop: stop-warlocks-server stop-warlocks-client
 
 start-warlocks-server: build-warlocks-server
 	$(LOADENV); $(NODE_BIN)/nodemon --watch $(SRCROOTDIR)/packages/server \
-	--exec "make build-warlocks-server && $(NODE) $(BUILDIR)/server/main.js | $(NODE_BIN)/pino-pretty -c" \
-	> $(BUILDROOTDIR_ABS)/server.log 2>&1 & echo $$! > $(BUILDROOTDIR_ABS)/server.pid
+	--exec "(make build-warlocks-server && $(NODE) $(BUILDIR)/server/main.js | $(NODE_BIN)/pino-pretty -c) || exit 1" \
+	> $(BUILDROOTDIR_ABS)/server.log 2>&1 & pid=$$!; \
+	echo $$pid > $(BUILDROOTDIR_ABS)/server.pid
 
 start-warlocks-client: build-warlocks-client
 	$(LOADENV); cd $(SRCROOTDIR)/packages/client; \
-	$(NODE_BIN)/vite > $(BUILDROOTDIR_ABS)/client.log 2>&1 & echo $$! > $(BUILDROOTDIR_ABS)/client.pid
+	bash -c '$(NODE_BIN)/vite' > $(BUILDROOTDIR_ABS)/client.log 2>&1 & pid=$$!; \
+	echo $$pid > $(BUILDROOTDIR_ABS)/client.pid
 
 stop-warlocks-server:
-	if [[ -f server.pid ]]; then \
-		pid="$$($(CAT) server.pid)"; \
-		kill "$$pid" 2>/dev/null; \
-		if [[ $$? -eq 0 ]]; \
-			then echo "Killed warlocks-server($$pid)"; $(RM) $(BUILDROOTDIR_ABS)/server.pid; \
-			else echo "Failed to kill warlocks-server($$pid)"; \
-		fi; \
+	@if [[ -f server.pid ]]; then \
+		kptree server.pid; \
+		if [[ $$? -eq 0 ]]; then echo 'Killed warlocks-server'; else 'Failed to kill warlocks-server'; fi; \
+	else \
+		echo 'Warlocks-server not running!'; \
 	fi
 
 stop-warlocks-client:
-		if [[ -f client.pid ]]; then \
-		pid="$$($(CAT) client.pid)"; \
-		kill "$$pid" 2>/dev/null; \
-		if [[ $$? -eq 0 ]]; \
-			then echo "Killed warlocks-client($$pid)"; $(RM) $(BUILDROOTDIR)/client.pid; \
-			else echo "Failed to kill warlocks-client($$pid)"; \
-		fi; \
+	@if [[ -f client.pid ]]; then \
+		kptree client.pid; \
+		if [[ $$? -eq 0 ]]; then echo 'Killed warlocks-client'; else 'Failed to kill warlocks-client'; fi; \
+	else \
+		echo 'Warlocks-client not running!'; \
 	fi
 
 ##################################################
 # Build
 ##################################################
-build: dotenv build-warlocks-server build-warlocks-client
+build: build-warlocks-server build-warlocks-client
 
-build-warlocks-server:
-	$(LOADENV); \
-	cd $(SRCROOTDIR)/packages/server && $(NODE) esbuild.build.js
+build-warlocks-server: dotenv
+	$(LOADENV); cd $(SRCROOTDIR)/packages/server && $(NODE) esbuild.build.js
 
-build-warlocks-client:
-	$(LOADENV); \
-	cd $(SRCROOTDIR)/packages/client && $(NODE) vite.build.js
+build-warlocks-client: dotenv
+	$(LOADENV); cd $(SRCROOTDIR)/packages/client && $(NODE) vite.build.js
 
 ##################################################
 # Release
@@ -233,8 +222,8 @@ distclean: clean
 ##################################################
 dotenv: $(DOTENVFILE)
 
-$(DOTENVFILE): $(CONFIG_MAKEFILE_IN) | $(BUILDIR_ABS)
-	$(ECHO) -e $(ENVIRONMENT) > $@
+$(DOTENVFILE): $(CONFIG_MACROSFILE) | $(BUILDIR_ABS)
+	$(ECHO) -e $(ENVIRONMENT) | sed -E "s#(.*)=\x27\x27#\1=\x27__\1__\x27#" | $(M4) $(CONFIG_MACROSFILE) - > $@
 
 ##################################################
 # misc

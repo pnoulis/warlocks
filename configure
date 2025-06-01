@@ -24,7 +24,7 @@ main() {
     simba_define_btime_envar APP_REPO_TYPE 'git'
     simba_define_btime_envar APP_REPO_URL 'https://github.com/pnoul/warlocks'
     simba_define_btime_envar APP_HOME_URL 'https://github.com/pnoul/warlocks'
-    simba_define_btime_envar APP_DOCUMENTATION_URL 'https://github.com/pnoul/warlocks#readme'
+    simba_define_btime_envar APP_DOCUMENTATION_URL 'https://github.com/pnoul/warlocks\#readme'
     simba_define_btime_envar APP_BUG_REPORT_URL 'https://github.com/pnoul/warlocks/issues'
     simba_define_btime_envar APP_SUPPORT_URL 'https://github.com/pnoul/warlocks'
 
@@ -195,6 +195,18 @@ simba_cli_parse_options() {
             --program-suffix | --program-suffix=*)
                 simba_cli_parse_param "$@" || shift $?
                 PROGRAM_SUFFIX="$_param"
+                ;;
+            --warlocks-server-url | --warlocks-server-url=*)
+                simba_cli_parse_param "$@" || shift $?
+                simba_url_parse "$_param"
+                simba_define_btime_envar WARLOCKS_SERVER_URL "$url"
+                simba_define_btime_envar WARLOCKS_SERVER_PROTOCOL "$protocol"
+                simba_define_btime_envar WARLOCKS_SERVER_USERNAME "$username"
+                simba_define_btime_envar WARLOCKS_SERVER_PASSWORD "$password"
+                simba_define_btime_envar WARLOCKS_SERVER_HOST "$host"
+                simba_define_btime_envar WARLOCKS_SERVER_ORIGIN "$origin"
+                simba_define_btime_envar WARLOCKS_SERVER_PORT "$port"
+                simba_define_btime_envar WARLOCKS_SERVER_PATH "$path"
                 ;;
             -h | --help)
                 usage

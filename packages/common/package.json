@@ -1,7 +1,7 @@
 {
-  "name": "warlocks-server",
+  "name": "warlocks-common",
   "version": "0.0.1",
-  "description": "Warlocks game server",
+  "description": "Warlocks common utilities",
   "author": "pavlos noulis <pavlos.noulis@gmail.com> (https://github.com/pnoulis)",
   "private": true,
   "engines": {
@@ -10,12 +10,8 @@
   },
   "type": "module",
   "scripts": {},
-  "devDependencies": {
-    "@types/ws": "^8.18.1",
-    "esbuild": "^0.25.5",
-    "warlocks-common": "../common"
-  },
-  "dependencies": {
-    "ws": "^8.18.2"
+  "devDependencies": {},
+  "exports": {
+    "./*": "./src/*.js"
   }
 }

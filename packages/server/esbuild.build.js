@@ -4,8 +4,8 @@ import * as Path from "node:path";
 const transformAbsoluteModuleImports = {
   name: "transformAbsoluteModuleImports",
   setup(build) {
-    build.onResolve({ filter: /^\// }, (args) => ({
-      path: join(import.meta.dirname, args.path),
+    build.onResolve({ filter: /@warlocks\/server/ }, (args) => ({
+      path: Path.join(import.meta.dirname, "src", args.path.split("/").slice(2)),
     }));
   },
 };
@@ -16,7 +16,7 @@ if (process.env.NODE_ENV === "production") {
     bundle: true,
     entryPoints: ["src/main.js"],
     outdir: Path.join(process.env.BUILDIR_ABS, "server"),
-    plugins: [transformAbsoluteModuleImports],
+    plugins: [],
     minify: true,
     treeShaking: true,
     format: "esm",
@@ -30,7 +30,7 @@ if (process.env.NODE_ENV === "production") {
     bundle: true,
     entryPoints: ["src/main.js"],
     outdir: Path.join(process.env.BUILDIR_ABS, "server"),
-    plugins: [transformAbsoluteModuleImports],
+    plugins: [],
     minify: false,
     treeShaking: false,
     format: "esm",

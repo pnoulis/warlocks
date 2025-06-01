@@ -2,7 +2,6 @@
   "name": "warlocks-client",
   "version": "0.0.1",
   "description": "Warlocks player client",
-  "license": "MIT",
   "author": "pavlos noulis <pavlos.noulis@gmail.com> (https://github.com/pnoulis)",
   "private": true,
   "engines": {

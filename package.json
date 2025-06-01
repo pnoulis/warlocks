@@ -10,15 +10,15 @@
     "npm": "v10.9.2"
   },
   "type": "module",
-  "scripts": {
-    "prepare": "husky install"
-  },
+  "scripts": {},
   "keywords": [
     "multiplayer",
     "game"
   ],
   "workspaces": [
-    "packages/*"
+    "packages/server",
+    "packages/client",
+    "packages/common"
   ],
   "devDependencies": {
     "husky": "^9.1.7",
@@ -28,6 +28,6 @@
     "prettier": "^3.5.3"
   },
   "lint-staged": {
-    "*.{js,css,md}": "prettier --write"
+    "*.{js,css,md,json}": "prettier --write"
   }
 }
