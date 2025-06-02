@@ -35,13 +35,13 @@ simba_resolve_os_dependencies() {
   simba_is_command_installed bash 5.1.16 ">="
   simba_define_ctime_envar_respectfully BASH $command_path
 
-  simba_is_command_installed make 4.3 ">="
+  simba_is_command_installed make 4.0 ">="
   simba_define_ctime_envar_respectfully MAKE $command_path
 
-  simba_is_command_installed m4 1.4.19 ">="
+  simba_is_command_installed m4 1.4 ">="
   simba_define_ctime_envar_respectfully M4 $command_path
 
-  simba_is_command_installed rm 9
+  simba_is_command_installed rm
   simba_define_ctime_envar_respectfully RM $command_path
 
   simba_is_command_installed mv
