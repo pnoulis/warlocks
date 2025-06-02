@@ -1,12 +1,12 @@
-import { Message } from "./Message.js";
+export function playerConnected(event, state, connectedPlayer) {
+  const msg = JSON.stringify({
+    type: event.type,
+    id: connectedPlayer.id,
+    x: connectedPlayer.x,
+    y: connectedPlayer.y,
+  });
 
-export function playerConnected(connection, player) {
-  const msg = new Message(connection);
-  msg.type = "PLAYER_INITIALIZE_STATE";
-  msg.data = {
-    id: player.id,
-    x: player.x,
-    y: player.y,
-  };
+  connectedPlayer.ws.send(msg);
+
   return msg;
 }

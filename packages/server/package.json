@@ -15,7 +15,6 @@
     "esbuild": "^0.25.5"
   },
   "dependencies": {
-    "ws": "^8.18.2",
-    "warlocks-common": "../common"
+    "ws": "^8.18.2"
   }
 }

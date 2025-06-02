@@ -149,7 +149,12 @@ start-warlocks-client: build-warlocks-client
 stop-warlocks-server:
 	@if [[ -f server.pid ]]; then \
 		kptree server.pid; \
-		if [[ $$? -eq 0 ]]; then echo 'Killed warlocks-server'; else 'Failed to kill warlocks-server'; fi; \
+		if [[ $$? -eq 0 ]]; then \
+			echo 'Killed warlocks-server'; \
+			$(RM) server.pid; \
+		else \
+			echo 'Failed to kill warlocks-server'; \
+		fi; \
 	else \
 		echo 'Warlocks-server not running!'; \
 	fi
@@ -157,7 +162,12 @@ stop-warlocks-server:
 stop-warlocks-client:
 	@if [[ -f client.pid ]]; then \
 		kptree client.pid; \
-		if [[ $$? -eq 0 ]]; then echo 'Killed warlocks-client'; else 'Failed to kill warlocks-client'; fi; \
+		if [[ $$? -eq 0 ]]; then \
+			echo 'Killed warlocks-client'; \
+			$(RM) client.pid; \
+		else \
+			echo 'Failed to kill warlocks-client'; \
+		fi; \
 	else \
 		echo 'Warlocks-client not running!'; \
 	fi
