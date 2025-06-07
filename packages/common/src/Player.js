@@ -1,31 +1,36 @@
-import { Direction, DIRECTION_VECTORS } from "./direction.js";
-
 export class Player {
+  static speed = g.constants.KINETIC_SPEED;
+
   constructor(id, x, y, ws) {
     this.id = id;
     this.x = x;
     this.y = y;
-    this.moving = {
-      [Direction.LEFT]: false,
-      [Direction.RIGHT]: false,
-      [Direction.UP]: false,
-      [Direction.DOWN]: false,
-    };
+    this.targetX = 0;
+    this.targetY = 0;
     this.ws = ws;
   }
 
   updatePosition(deltaTime) {
-    let dx = 0;
-    let dy = 0;
+    // Compute distance to target
+    if (!this.targetX) return;
+    const dx = this.targetX - this.x;
+    const dy = this.targetY - this.y;
+    const distance = Math.hypot(dx, dy);
 
-    for (const direction in DIRECTION_VECTORS) {
-      if (this.moving[direction]) {
-        dx += DIRECTION_VECTORS[direction].x;
-        dy += DIRECTION_VECTORS[direction].y;
-      }
+    // If close enough, snap to target and stop moving
+    if (distance < 1) {
+      this.x = this.targetX;
+      this.y = this.targetY;
+      return;
     }
 
-    this.x += dx * (deltaTime + 0.5);
-    this.y += dy * (deltaTime + 0.5);
+    // Normalize direction vector
+    const directionX = dx / distance;
+    const directionY = dy / distance;
+
+    // Move by speed * deltaTime
+    const moveDistance = Player.speed * deltaTime;
+    this.x += directionX * moveDistance;
+    this.y += directionY * moveDistance;
   }
 }

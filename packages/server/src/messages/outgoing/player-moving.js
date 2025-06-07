@@ -6,7 +6,8 @@ export function playerMoving(state, event) {
   });
 
   // Moving player is updated
-  movingPlayer.moving = event.msg.moving;
+  movingPlayer.targetX = event.msg.targetX;
+  movingPlayer.targetY = event.msg.targetY;
 
   for (const otherPlayer of state.players.values()) {
     if (otherPlayer.id === movingPlayer.id) continue;

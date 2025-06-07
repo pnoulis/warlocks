@@ -1,4 +1,6 @@
 export function playerMoving(state, msg) {
   // Update player's position
-  state.players.get(msg.id).moving = msg.moving;
+  const movingPlayer = state.players.get(msg.id);
+  movingPlayer.targetX = msg.targetX;
+  movingPlayer.targetY = msg.targetY;
 }
