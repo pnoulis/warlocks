@@ -5,7 +5,11 @@ const transformAbsoluteModuleImports = {
   name: "transformAbsoluteModuleImports",
   setup(build) {
     build.onResolve({ filter: /@warlocks\/server/ }, (args) => ({
-      path: Path.join(import.meta.dirname, "src", args.path.split("/").slice(2)),
+      path: Path.join(
+        import.meta.dirname,
+        "src",
+        args.path.split("/").slice(2)
+      ),
     }));
   },
 };

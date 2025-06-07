@@ -1,6 +1,5 @@
 import "./globals.js";
-import * as common from "warlocks-common/constants";
-import { handleServerMessage } from "./handle-server-message.js";
+import { createIncomingMessageHandler } from "./handle-incoming-message.js";
 
 debug("hello warlocks client");
 
@@ -9,34 +8,37 @@ const state = {
   players: new Map(),
 };
 
-(async () => {
-  const gameCanvas = document.getElementById("game");
-  if (!gameCanvas) throw new Error("No element with id `game`");
+const gameCanvas = document.getElementById("game");
+if (!gameCanvas) throw new Error("No element with id `game`");
+gameCanvas.width = g.constants.WORLD_WIDTH;
+gameCanvas.height = g.constants.WORLD_HEIGHT;
+const ctx = gameCanvas.getContext("2d");
+if (!ctx) throw new Error("2D canvas is not supported");
+state.canvas = gameCanvas;
+state.canvasRect = gameCanvas.getBoundingClientRect();
 
-  gameCanvas.width = common.WORLD_WIDTH;
-  gameCanvas.height = common.WORLD_HEIGHT;
+const ws = new WebSocket("ws://localhost:6970");
 
-  const ctx = gameCanvas.getContext("2d");
-  if (!ctx) throw new Error("2D canvas is not supported");
+// Server Events
+ws.addEventListener("close", (event) => {
+  g.debug(`[WEBSOCKET CLOSE]`, event);
+  alert("[WEBSOCKET CLOSED]");
+});
+ws.addEventListener("error", (event) => {
+  g.debug(`[WEBSOCKET ERROR]`, event);
+  alert("[WEBSOCKET ERROR]");
+});
+ws.addEventListener("open", (event) => {
+  g.debug("[WEBSOCKET OPEN]");
+});
+ws.addEventListener("message", createIncomingMessageHandler(state, ws));
 
-  const ws = new WebSocket("ws://localhost:6970");
-  ws.addEventListener("close", (event) => {
-    debug(`[WEBSOCKET CLOSE]`, event);
-  });
-  ws.addEventListener("error", (event) => {
-    debug(`[WEBSOCKET ERROR]`, event);
-  });
+function gameLoop() {
+  let previousTimestamp = Date.now();
 
-  ws.addEventListener("message", (event) => {
-    handleServerMessage(ws, state, event);
-  });
+  g.window.requestAnimationFrame(frame);
 
-  ws.addEventListener("open", (event) => {
-    debug(`[WEBSOCKET OPEN]`);
-  });
-
-  let previousTimestamp = 0;
-  const frame = (timestamp) => {
+  function frame(timestamp) {
     const deltaTime = (timestamp - previousTimestamp) / 1000;
     previousTimestamp = timestamp;
 
@@ -44,14 +46,16 @@ const state = {
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.fillStyle = "red";
     state.players.forEach((player) => {
-      ctx.fillRect(player.x, player.y, common.PLAYER_SIZE, common.PLAYER_SIZE);
+      player.updatePosition(deltaTime);
+      ctx.fillRect(
+        player.x,
+        player.y,
+        g.constants.PLAYER_SIZE,
+        g.constants.PLAYER_SIZE
+      );
     });
-
     window.requestAnimationFrame(frame);
-  };
+  }
+}
 
-  window.requestAnimationFrame((timestamp) => {
-    previousTimestamp = timestamp;
-    window.requestAnimationFrame(frame);
-  });
-})();
+gameLoop();

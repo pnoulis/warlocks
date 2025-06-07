@@ -1,19 +1,7 @@
-export const Direction = {
-  LEFT: "left",
-  RIGHT: "right",
-  UP: "up",
-  DOWN: "down",
-};
-
-export const DIRECTION_VECTORS = {
-  [Direction.LEFT]: { x: -1, y: 0 },
-  [Direction.RIGHT]: { x: 1, y: 0 },
-  [Direction.UP]: { x: 0, y: -1 },
-  [Direction.DOWN]: { x: 0, y: 1 },
-};
+import { Direction, DIRECTION_VECTORS } from "./direction.js";
 
 export class Player {
-  constructor(id, x, y) {
+  constructor(id, x, y, ws) {
     this.id = id;
     this.x = x;
     this.y = y;
@@ -23,9 +11,10 @@ export class Player {
       [Direction.UP]: false,
       [Direction.DOWN]: false,
     };
+    this.ws = ws;
   }
 
-  update(deltaTime) {
+  updatePosition(deltaTime) {
     let dx = 0;
     let dy = 0;
 
@@ -36,7 +25,7 @@ export class Player {
       }
     }
 
-    this.x += dx * deltaTime;
-    this.y += dy * deltaTime;
+    this.x += dx * (deltaTime + 0.5);
+    this.y += dy * (deltaTime + 0.5);
   }
 }

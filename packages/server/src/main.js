@@ -2,19 +2,10 @@ import "./globals.js";
 import { startupSequence } from "./startup-sequence.js";
 import { shutdownSequence } from "./shutdown-sequence.js";
 import { wss } from "./websocket-server.js";
-import { ServerPlayer } from "./ServerPlayer.js";
-import { Timings } from "./Timings.js";
-import MsgType from "warlocks-common/message-type-enum";
-import { handleClientMessage } from "./handle-client-message.js";
-
-// As soon as somebody connects, we want to register the client and
-// map them with their state
-// sharing the state between server and clients.
-// The client does not know the server side sockets.
-// it is not a reliable way to identify the players.
-// There needs to be some sort of id in the player.
-
-// Pass the player id to the client
+import { playerConnected } from "./messages/incoming/player-connected.js";
+import { createIncomingMessageHandler } from "./handle-incoming-message.js";
+import { handleOutgoingMessage } from "./handle-outgoing-message.js";
+import { playerDisconnected } from "./messages/incoming/player-disconnected.js";
 
 process.on("SIGINT", shutdownSequence);
 process.on("SIGTERM", shutdownSequence);
@@ -27,47 +18,27 @@ process.on("uncaughtException", (err) => {
 
 await startupSequence();
 
-const players = new Map();
-const eventQueue = [];
+const state = {
+  players: new Map(),
+  eventQueue: [],
+};
 
 wss.on("connection", (ws) => {
-  const player = new ServerPlayer(ws);
-  players.set(player.id, player);
-
-  eventQueue.push({
-    type: MsgType.PLAYER_JOINED,
-    id: player.id,
-    x: player.x,
-    y: player.y,
-  });
-
-  ws.on("message", (event) => {
-    const msg = JSON.parse(event);
-    if (msg.id === player.id) return eventQueue.push(msg);
-
-    // Player is doing naughty stuff by pretending they are someone
-    // else through a different ID (could just be a something else
-    // though)
-    eventQueue.push({
-      type: MsgType.PLAYER_NAUGHTY,
-      id: player.id,
-    });
-  });
-
-  ws.on("close", () => {
-    eventQueue.push({
-      type: MsgType.PLAYER_DISCONNECTED,
-      id: player.id,
-    });
-  });
+  const player = playerConnected(state, ws);
+  ws.on("message", createIncomingMessageHandler(state, player));
+  ws.on("close", () => playerDisconnected(state, player));
 });
 
 function gameLoop() {
-  for (const event of eventQueue) {
-    handleClientMessage(event, { players });
+  try {
+    for (const event of state.eventQueue) {
+      handleOutgoingMessage(state, event);
+    }
+    state.eventQueue.length = 0;
+  } catch (err) {
+    g.debug(err);
   }
-  eventQueue.length = 0;
-  globalThis.setTimeout(gameLoop, 1000 / globalThis.SERVER_FPS);
+  g.setTimeout(gameLoop, 1000 / g.SERVER_FPS);
 }
 
-globalThis.setTimeout(gameLoop, 1000 / globalThis.SERVER_FPS);
+gameLoop();

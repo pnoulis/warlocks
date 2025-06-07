@@ -1,4 +1,4 @@
-const isNode = typeof globalThis.window === "undefined";
+import { isNode } from "./platform.js";
 
 export function debug(...msg) {
   for (let i = 0; i < msg.length; i++) {

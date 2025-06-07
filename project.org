@@ -85,5 +85,25 @@ probably some discrepancies have accumulated.
 
 
 
-
 * Sharing state - updating state
+* Coding conventions
+messages/outgoing
+messages/incoming
+
+function signatures:
+client(incoming): (state, event)
+client(outgoing): (state, event)
+server(incoming): (state, event)
+server(outgoing): (state, event)
+
+Create a circular reference to globalThis named `g`.
+Always access global variables using: `g.`
+
+Event:
+{
+  type: "",
+  msg: {},
+  player: {},
+  ...rest
+}
+
