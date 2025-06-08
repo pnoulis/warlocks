@@ -2,17 +2,14 @@ export function playerMoving(state, event) {
   const movingPlayer = event.player;
   const msg = JSON.stringify({
     type: event.type,
-    ...event.msg,
+    id: movingPlayer.id,
+    targetX: event.msg.targetX,
+    targetY: event.msg.targetY,
+    x: movingPlayer.x,
+    y: movingPlayer.y,
   });
 
-  // Moving player is updated
-  movingPlayer.targetX = event.msg.targetX;
-  movingPlayer.targetY = event.msg.targetY;
-
-  for (const otherPlayer of state.players.values()) {
-    if (otherPlayer.id === movingPlayer.id) continue;
-
-    // Other players are instructed to update the moving player's state
-    otherPlayer.ws.send(msg);
-  }
+  // All players including the one expressed an intent to move are instructed to
+  // update their state.
+  state.players.forEach((player) => player.ws.send(msg));
 }

@@ -30,15 +30,24 @@ wss.on("connection", (ws) => {
 });
 
 function gameLoop() {
-  try {
-    for (const event of state.eventQueue) {
-      handleOutgoingMessage(state, event);
+  tick(0);
+  function tick(previousTimestamp) {
+    const now = Date.now();
+    const deltaTime = (now - previousTimestamp) / 1000;
+    previousTimestamp = now;
+
+    state.players.forEach((player) => player.updatePosition(deltaTime));
+    try {
+      for (const event of state.eventQueue) {
+        handleOutgoingMessage(state, event);
+      }
+      state.eventQueue.length = 0;
+    } catch (err) {
+      g.debug(err);
+      process.exit(0);
     }
-    state.eventQueue.length = 0;
-  } catch (err) {
-    g.debug(err);
+    g.setTimeout(() => tick(now), 1000 / g.SERVER_FPS);
   }
-  g.setTimeout(gameLoop, 1000 / g.SERVER_FPS);
 }
 
 gameLoop();

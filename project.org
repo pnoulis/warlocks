@@ -107,3 +107,43 @@ Event:
   ...rest
 }
 
+* State synchronization and malicious intent prevention
+
+Both the clients and the server operate under an infinite loop where on each
+`TICK` the state is re-evaluated. This model effectively simulates a continuous
+progression through linear time. This model runs independently on each client
+and the server, presenting a challenge:
+
+Can we guarantee an identical state across all clients and server, considering
+the asynchronous and distributed nature of the operating context?
+
+
+Consider the example:
+
+1. Player 'A' clicks on the game map.
+2. The client picks up the event, updates its state, and then transmits the event.
+3. The server picks up the event, updates its state, and then transmits the event
+   to all other players.
+4. Player 'B' receives the event, updates Player's 'A' state.
+
+
+These actions will run along the game infinite loop, which means that as soon as
+(1) took place the client's game loop updated its state, moving the player
+across the map.
+
+When (4) took place, player (1) has already moved in his states map. At this
+specific moment, the state between (1) and (3) and (4) have already diverged.
+
+
+There might be multiple methods to deal with preventing a diverged state, I have
+picked up the following:
+
+
+1. Player 'A' clicks on the game map.
+2. The client picks up the event, does NOT update its state, and then transmits
+   an event that EXPRESSES an INTENT to move.
+3. The server picks up the event, and transmits the ACTUAL MOVING event to all
+   players including player 'A'. The contents of this event will contain NOT the
+   state of the player 'A' as found in the client but rather the state of player
+   'A' of the server.
+4. All players pick up the event and update their state simultaneously.

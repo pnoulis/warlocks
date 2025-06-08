@@ -1,6 +1,6 @@
-export class Player {
-  static speed = g.constants.KINETIC_SPEED;
+import { PLAYER_SPEED } from "./constants.js";
 
+export class Player {
   constructor(id, x, y, ws) {
     this.id = id;
     this.x = x;
@@ -29,7 +29,7 @@ export class Player {
     const directionY = dy / distance;
 
     // Move by speed * deltaTime
-    const moveDistance = Player.speed * deltaTime;
+    const moveDistance = PLAYER_SPEED * deltaTime;
     this.x += directionX * moveDistance;
     this.y += directionY * moveDistance;
   }
