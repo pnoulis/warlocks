@@ -6,7 +6,7 @@ export function debug(...msg) {
       console.log(msg[i]);
       continue;
     }
-    console.dir(msg[i], { depth: null });
+    console.dir(msg[i], { depth: 4 });
   }
   return msg.length ? msg[0] : msg;
 }

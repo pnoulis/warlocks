@@ -6,6 +6,8 @@ debug("hello warlocks client");
 const state = {
   id: null,
   players: new Map(),
+  projectiles: [],
+  inputEventQueue: [],
 };
 
 const gameCanvas = document.getElementById("game");
@@ -42,8 +44,11 @@ function gameLoop() {
     const deltaTime = (timestamp - previousTimestamp) / 1000;
     previousTimestamp = timestamp;
 
+    // Draw canvas
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    // Draw players
     ctx.fillStyle = "red";
     state.players.forEach((player) => {
       player.updatePosition(deltaTime);
@@ -54,6 +59,20 @@ function gameLoop() {
         g.constants.PLAYER_SIZE
       );
     });
+
+    // Draw projectiles
+    ctx.fillStyle = "blue";
+    state.projectiles.forEach((projectile) => {
+      projectile.updatePosition(deltaTime);
+      ctx.fillRect(
+        projectile.x,
+        projectile.y,
+        g.constants.PROJECTILE_SIZE,
+        g.constants.PROJECTILE_SIZE
+      );
+    });
+
+    // Loop
     window.requestAnimationFrame(frame);
   }
 }

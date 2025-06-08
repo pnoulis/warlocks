@@ -9,7 +9,5 @@ export function playerMoving(state, event) {
     y: movingPlayer.y,
   });
 
-  // All players including the one expressed an intent to move are instructed to
-  // update their state.
   state.players.forEach((player) => player.ws.send(msg));
 }

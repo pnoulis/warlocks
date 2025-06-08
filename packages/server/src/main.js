@@ -20,6 +20,7 @@ await startupSequence();
 
 const state = {
   players: new Map(),
+  projectiles: [],
   eventQueue: [],
 };
 
@@ -37,6 +38,9 @@ function gameLoop() {
     previousTimestamp = now;
 
     state.players.forEach((player) => player.updatePosition(deltaTime));
+    state.projectiles.forEach((projectile) =>
+      projectile.updatePosition(deltaTime)
+    );
     try {
       for (const event of state.eventQueue) {
         handleOutgoingMessage(state, event);

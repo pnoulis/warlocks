@@ -1,4 +1,5 @@
 import { playerIntentsMoving } from "./messages/incoming/player-intents-moving";
+import { playerIntentsSkillshot } from "./messages/incoming/player-intents-skillshot";
 
 export function createIncomingMessageHandler(state, player) {
   return handleIncomingMessage;
@@ -17,6 +18,9 @@ export function createIncomingMessageHandler(state, player) {
     switch (type) {
       case g.MessageType.PLAYER_INTENTS_MOVING:
         playerIntentsMoving(state, { type, msg, player });
+        break;
+      case g.MessageType.PLAYER_INTENTS_SKILLSHOT:
+        playerIntentsSkillshot(state, { type, msg, player });
         break;
       default:
         state.eventQueue.push({ type, msg, player });

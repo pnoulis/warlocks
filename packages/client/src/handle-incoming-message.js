@@ -2,6 +2,7 @@ import { playerConnected } from "./messages/incoming/player-connected.js";
 import { playerDisconnected } from "./messages/incoming/player-disconnected.js";
 import { playerJoined } from "./messages/incoming/player-joined.js";
 import { playerMoving } from "./messages/incoming/player-moving.js";
+import { playerSkillshot } from "./messages/incoming/player-skillshot.js";
 
 export function createIncomingMessageHandler(state, ws) {
   return handleIncomingMessage;
@@ -21,6 +22,9 @@ export function createIncomingMessageHandler(state, ws) {
         break;
       case g.MessageType.PLAYER_MOVING:
         playerMoving(state, msg);
+        break;
+      case g.MessageType.PLAYER_SKILLSHOT:
+        playerSkillshot(state, msg);
         break;
       default:
         ws.close();

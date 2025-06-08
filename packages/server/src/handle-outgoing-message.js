@@ -2,6 +2,7 @@ import { playerConnected } from "./messages/outgoing/player-connected.js";
 import { playerDisconnected } from "./messages/outgoing/player-disconnected.js";
 import { playerMoving } from "./messages/outgoing/player-moving.js";
 import { playerNaughty } from "./messages/outgoing/player-naughty.js";
+import { playerSkillshot } from "./messages/outgoing/player-skillshot.js";
 
 export function handleOutgoingMessage(state, event) {
   debug(`[OUTGOING][${event.type}] ${event.player.id}`);
@@ -14,6 +15,9 @@ export function handleOutgoingMessage(state, event) {
       break;
     case g.MessageType.PLAYER_MOVING:
       playerMoving(state, event);
+      break;
+    case g.MessageType.PLAYER_SKILLSHOT:
+      playerSkillshot(state, event);
       break;
     case g.MessageType.PLAYER_NAUGHTY:
       playerNaughty(state, event);

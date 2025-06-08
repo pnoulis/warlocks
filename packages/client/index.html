@@ -11,6 +11,40 @@
       <h1>Hello warlock player!</h1>
       <main>
         <canvas id="game"></canvas>
+        <aside class="skill-bar" aria-label="Skill bar">
+          <figure class="skill-slot">
+            <img
+              src="https://via.placeholder.com/64x64.png?text=Q"
+              alt="Fireball skill icon"
+            />
+            <div class="cooldown"></div>
+            <figcaption class="tooltip">Fireball (Q)</figcaption>
+          </figure>
+          <figure class="skill-slot">
+            <img
+              src="https://via.placeholder.com/64x64.png?text=W"
+              alt="Ice Shield skill icon"
+            />
+            <!-- No cooldown here -->
+            <figcaption class="tooltip">Ice Shield (W)</figcaption>
+          </figure>
+          <figure class="skill-slot">
+            <img
+              src="https://via.placeholder.com/64x64.png?text=E"
+              alt="Dash skill icon"
+            />
+            <div class="cooldown"></div>
+            <figcaption class="tooltip">Dash (E)</figcaption>
+          </figure>
+          <figure class="skill-slot">
+            <img
+              src="https://via.placeholder.com/64x64.png?text=R"
+              alt="Ultimate Blast skill icon"
+            />
+            <!-- No cooldown here -->
+            <figcaption class="tooltip">Ultimate Blast (R)</figcaption>
+          </figure>
+        </aside>
       </main>
     </div>
     <script type="module" src="/src/main.js"></script>

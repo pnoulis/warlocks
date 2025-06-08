@@ -10,17 +10,11 @@ export function playerConnected(state, msg, ws) {
   state.players.set(player.id, player);
 
   // Keyboard input
-  document.addEventListener(
-    "keydown",
-    createKeyboardEventHandler((event) => {
-      handleOutgoingMessage(state, { ...event, player });
-    })
+  createKeyboardEventHandler(state, (event) =>
+    handleOutgoingMessage(state, { ...event, player })
   );
   // Mouse input
-  document.addEventListener(
-    "click",
-    createMouseEventHandler((event) => {
-      handleOutgoingMessage(state, { ...event, player });
-    })
+  createMouseEventHandler(state, (event) =>
+    handleOutgoingMessage(state, { ...event, player })
   );
 }

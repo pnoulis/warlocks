@@ -1,11 +1,18 @@
 import { KeyMap } from "./keymap.js";
 
 export function createKeyboardEventHandler(state, cb) {
-  return handleKeyboardEvent;
+  document.addEventListener("keydown", handleKeyboardEvent);
   function handleKeyboardEvent(event) {
-    const fn = KeyMap[event.key];
-    if (!fn) return;
+    const action = KeyMap[event.key];
+    if (!action) return;
+
     event.preventDefault();
-    cb(fn(event));
+    event.stopPropagation();
+
+    if (state.inputEventQueue.at(-1)?.type === action.type) {
+      state.inputEventQueue.pop();
+    }
+
+    state.inputEventQueue.push({ ...action, kbd: event });
   }
 }
