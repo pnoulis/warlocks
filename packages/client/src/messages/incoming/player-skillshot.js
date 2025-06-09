@@ -1,7 +1,9 @@
 import { Projectile } from "warlocks-common/Projectile";
+import { addProjectile } from "warlocks-common/misc";
 
 export function playerSkillshot(state, msg) {
   const projectile = new Projectile(
+    msg.skillshot.id,
     msg.skillshot.type,
     msg.skillshot.uid,
     msg.skillshot.x,
@@ -9,5 +11,5 @@ export function playerSkillshot(state, msg) {
     msg.skillshot.directionX,
     msg.skillshot.directionY
   );
-  state.projectiles.push(projectile);
+  addProjectile(state.projectiles, projectile);
 }

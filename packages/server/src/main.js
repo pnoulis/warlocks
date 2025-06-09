@@ -6,6 +6,7 @@ import { playerConnected } from "./messages/incoming/player-connected.js";
 import { createIncomingMessageHandler } from "./handle-incoming-message.js";
 import { handleOutgoingMessage } from "./handle-outgoing-message.js";
 import { playerDisconnected } from "./messages/incoming/player-disconnected.js";
+import { removeProjectile, isCollidingCircle } from "warlocks-common/misc";
 
 process.on("SIGINT", shutdownSequence);
 process.on("SIGTERM", shutdownSequence);
@@ -37,10 +38,40 @@ function gameLoop() {
     const deltaTime = (now - previousTimestamp) / 1000;
     previousTimestamp = now;
 
-    state.players.forEach((player) => player.updatePosition(deltaTime));
-    state.projectiles.forEach((projectile) =>
-      projectile.updatePosition(deltaTime)
-    );
+    const players = Array.from(state.players.values());
+    const projectiles = state.projectiles;
+
+    // Update player position
+    for (let i = 0; i < players.length; i++) {
+      players[i].updatePosition(deltaTime);
+    }
+
+    // Update projectile position
+    for (let i = 0; i < projectiles.length; i++) {
+      projectiles[i] && projectiles[i].updatePosition(deltaTime);
+    }
+
+    // Collision detection
+    for (let i = 0; i < projectiles.length; i++) {
+      if (projectiles[i] === null) continue;
+      for (let y = 0; y < players.length; y++) {
+        // Projectiles do not collide with their origin player.
+        if (players[y].id === projectiles[i].uid) continue;
+
+        // Non colliding projectile
+        if (!isCollidingCircle(projectiles[i], players[y])) continue;
+
+        // Colliding projectile
+        state.eventQueue.push({
+          type: g.MessageType.SKILLSHOT_COLLIDING,
+          player: players[y],
+          skillshot: projectiles[i],
+        });
+        removeProjectile(projectiles, i);
+        break;
+      }
+    }
+
     try {
       for (const event of state.eventQueue) {
         handleOutgoingMessage(state, event);

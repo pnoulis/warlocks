@@ -1,9 +1,11 @@
-import { PROJECTILE_SPEED } from "./constants.js";
+import { PROJECTILE_SPEED, PROJECTILE_RADIUS } from "./constants.js";
 
 export class Projectile {
-  constructor(type, uid, x, y, directionX, directionY) {
+  constructor(id, type, uid, x, y, directionX, directionY) {
+    this.id = id;
     this.type = type;
     this.uid = uid;
+    this.radius = PROJECTILE_RADIUS;
     this.x = x;
     this.y = y;
     this.directionX = directionX;

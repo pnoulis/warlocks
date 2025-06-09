@@ -136,7 +136,7 @@ start: start-warlocks-server start-warlocks-client
 stop: stop-warlocks-server stop-warlocks-client
 
 start-warlocks-server: build-warlocks-server
-	$(LOADENV); $(NODE_BIN)/nodemon --watch $(SRCROOTDIR)/packages/server \
+	$(LOADENV); $(NODE_BIN)/nodemon --watch $(SRCROOTDIR)/packages/server --watch $(SRCROOTDIR)/packages/common \
 	--exec "(make build-warlocks-server && $(NODE) $(BUILDIR)/server/main.js | $(NODE_BIN)/pino-pretty -c) || exit 1" \
 	> $(BUILDROOTDIR_ABS)/server.log 2>&1 & pid=$$!; \
 	echo $$pid > $(BUILDROOTDIR_ABS)/server.pid

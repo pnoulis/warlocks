@@ -1,8 +1,9 @@
-import { PLAYER_SPEED } from "./constants.js";
+import { PLAYER_SPEED, PLAYER_RADIUS } from "./constants.js";
 
 export class Player {
   constructor(id, x, y, ws) {
     this.id = id;
+    this.radius = PLAYER_RADIUS;
     this.x = x;
     this.y = y;
     this.targetX = 0;

@@ -1,10 +1,12 @@
 import { Projectile } from "warlocks-common/Projectile";
 import { SkillShotType } from "warlocks-common/skillshot-type";
+import { addProjectile } from "warlocks-common/misc";
 
 export function playerIntentsSkillshot(state, event) {
   switch (event.msg.skillshot) {
     case SkillShotType.FIREBALL:
       const projectile = new Projectile(
+        crypto.randomUUID(),
         event.msg.skillshot,
         event.player.id,
         event.player.x,
@@ -12,7 +14,7 @@ export function playerIntentsSkillshot(state, event) {
         event.msg.directionX,
         event.msg.directionY
       );
-      state.projectiles.push(projectile);
+      addProjectile(state.projectiles, projectile);
       state.eventQueue.push({
         type: g.MessageType.PLAYER_SKILLSHOT,
         skillshot: projectile,

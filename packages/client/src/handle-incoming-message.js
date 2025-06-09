@@ -3,6 +3,7 @@ import { playerDisconnected } from "./messages/incoming/player-disconnected.js";
 import { playerJoined } from "./messages/incoming/player-joined.js";
 import { playerMoving } from "./messages/incoming/player-moving.js";
 import { playerSkillshot } from "./messages/incoming/player-skillshot.js";
+import { skillshotColliding } from "./messages/incoming/skillshot-colliding.js";
 
 export function createIncomingMessageHandler(state, ws) {
   return handleIncomingMessage;
@@ -25,6 +26,9 @@ export function createIncomingMessageHandler(state, ws) {
         break;
       case g.MessageType.PLAYER_SKILLSHOT:
         playerSkillshot(state, msg);
+        break;
+      case g.MessageType.SKILLSHOT_COLLIDING:
+        skillshotColliding(state, msg);
         break;
       default:
         ws.close();

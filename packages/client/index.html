@@ -11,7 +11,9 @@
       <h1>Hello warlock player!</h1>
       <main>
         <canvas id="game"></canvas>
-        <aside class="skill-bar" aria-label="Skill bar">
+
+        <!-- SKILLBAR begins here -->
+        <aside class="skill-bar">
           <figure class="skill-slot">
             <img
               src="https://via.placeholder.com/64x64.png?text=Q"
@@ -45,6 +47,26 @@
             <figcaption class="tooltip">Ultimate Blast (R)</figcaption>
           </figure>
         </aside>
+        <!-- SKILLBAR ends here -->
+
+        <!-- PLAYER-PANEL begins here -->
+        <aside class="player-panel">
+          <section class="player" data-player="PlayerOne">
+            <h2 class="player-name">PlayerOne</h2>
+            <progress class="health" value="75" max="100"></progress>
+          </section>
+
+          <section class="player" data-player="PlayerTwo">
+            <h2 class="player-name">PlayerTwo</h2>
+            <progress class="health" value="40" max="100"></progress>
+          </section>
+
+          <section class="player" data-player="PlayerThree">
+            <h2 class="player-name">PlayerThree</h2>
+            <progress class="health" value="90" max="100"></progress>
+          </section>
+        </aside>
+        <!-- PLAYER-PANEL ends here -->
       </main>
     </div>
     <script type="module" src="/src/main.js"></script>

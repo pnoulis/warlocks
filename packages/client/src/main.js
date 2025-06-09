@@ -1,5 +1,6 @@
 import "./globals.js";
 import { createIncomingMessageHandler } from "./handle-incoming-message.js";
+import { removeProjectile } from "warlocks-common/misc";
 
 debug("hello warlocks client");
 
@@ -18,6 +19,7 @@ const ctx = gameCanvas.getContext("2d");
 if (!ctx) throw new Error("2D canvas is not supported");
 state.canvas = gameCanvas;
 state.canvasRect = gameCanvas.getBoundingClientRect();
+debug(state.canvasRect);
 
 const ws = new WebSocket("ws://localhost:6970");
 
@@ -37,12 +39,18 @@ ws.addEventListener("message", createIncomingMessageHandler(state, ws));
 
 function gameLoop() {
   let previousTimestamp = Date.now();
+  let collisionCandidates = [];
+  let players;
+  let projectiles;
+  let i = 0;
 
   g.window.requestAnimationFrame(frame);
 
   function frame(timestamp) {
     const deltaTime = (timestamp - previousTimestamp) / 1000;
     previousTimestamp = timestamp;
+    players = Array.from(state.players.values());
+    projectiles = state.projectiles;
 
     // Draw canvas
     ctx.fillStyle = "white";
@@ -50,31 +58,44 @@ function gameLoop() {
 
     // Draw players
     ctx.fillStyle = "red";
-    state.players.forEach((player) => {
-      player.updatePosition(deltaTime);
+    for (i = 0; i < players.length; i++) {
+      players[i].updatePosition(deltaTime);
       ctx.fillRect(
-        player.x,
-        player.y,
+        players[i].x,
+        players[i].y,
         g.constants.PLAYER_SIZE,
         g.constants.PLAYER_SIZE
       );
-    });
+    }
 
     // Draw projectiles
     ctx.fillStyle = "blue";
-    state.projectiles.forEach((projectile) => {
-      projectile.updatePosition(deltaTime);
+    for (i = 0; i < projectiles.length; i++) {
+      if (projectiles[i] === null) continue;
+      if (projectiles[i].colliding) {
+        removeProjectile(projectiles, i);
+        continue;
+      }
+      projectiles[i].updatePosition(deltaTime);
       ctx.fillRect(
-        projectile.x,
-        projectile.y,
+        projectiles[i].x,
+        projectiles[i].y,
         g.constants.PROJECTILE_SIZE,
         g.constants.PROJECTILE_SIZE
       );
-    });
+    }
 
     // Loop
     window.requestAnimationFrame(frame);
   }
+}
+
+function isCollidingCircleFast(c1, c2) {
+  const dx = c1.x - c2.x;
+  const dy = c1.y - c2.y;
+  const distSq = dx * dx + dy * dy;
+  const radiusSum = c1.radius + c2.radius;
+  return distSq < radiusSum * radiusSum;
 }
 
 gameLoop();
